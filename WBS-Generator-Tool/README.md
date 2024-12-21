@@ -4,6 +4,7 @@ An AI-powered command-line tool for generating comprehensive Work Breakdown Stru
 
 ## Features
 - Interactive project data collection with rich terminal UI
+- Test mode with pre-populated data for quick testing
 - AI-enhanced WBS generation using OpenAI GPT-4
 - Rich terminal UI with progress bars and colored output
 - Input validation and structured data collection

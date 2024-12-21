@@ -211,13 +211,25 @@ def test_collect_project_details_with_progress(mock_progress_class, wbs):
             call(mock_task, advance=1)
         ])
 
-def test_generate_wbs_markdown(wbs):
+@patch('openai.OpenAI')
+def test_generate_wbs_markdown(mock_openai, wbs):
     """Test markdown generation"""
+    # Setup mock OpenAI response
+    mock_completion = MagicMock()
+    mock_completion.choices = [MagicMock(message=MagicMock(content="""
+| Task ID | Task Name | Description | Duration | Start Date | End Date |
+|---------|-----------|-------------|----------|------------|----------|
+| 1.0 | Project Initiation | Initial setup | 5 | 2024-01-01 | 2024-01-06 |
+| 2.0 | Deliverable 1 | Description 1 | 2 | 2024-01-07 | 2024-01-21 |
+| 2.1 | Subtask 1 | Subtask description | 1 | 2024-01-07 | 2024-01-14 |
+"""))]
+    mock_openai.return_value.chat.completions.create.return_value = mock_completion
+    
     # Setup complete test data with required start_date
     wbs.project_info = {
         "name": "Test Project",
         "description": "Test Description",
-        "start_date": "2024-01-01",  # Added required start_date
+        "start_date": "2024-01-01",
         "sponsor": "Test Sponsor",
         "manager": "Test Manager",
         "budget": "1000"
@@ -232,18 +244,21 @@ def test_generate_wbs_markdown(wbs):
         "subtasks": ["Subtask 1"]
     }]
     
+    # Set OpenAI client
+    wbs.openai_client = mock_openai.return_value
+
     markdown = wbs.generate_wbs_markdown()
-    
+
     # Verify basic structure and content
     assert "# Work Breakdown Structure: Test Project" in markdown
     assert "## Project Information" in markdown
     assert "## Requirements and Constraints" in markdown
     assert "### Requirements" in markdown
     assert "- Requirement 1" in markdown
-    
-    # Verify table structure is present
-    assert "| Task ID | Task Name | Description |" in markdown
-    assert "| 1.0 | Project Initialization |" in markdown
+
+    # Verify table structure with known mock output
+    assert "| Task ID | Task Name |" in markdown
+    assert "| 1.0 | Project Initiation |" in markdown
     assert "| 2.0 | Deliverable 1 |" in markdown
     assert "| 2.1 | Subtask 1 |" in markdown
 
