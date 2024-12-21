@@ -90,7 +90,8 @@ def test_display_summary(wbs):
 @patch('rich.console.Console.print')
 def test_run_with_save_and_preview(mock_console_print, mock_confirm, wbs):
     """Test run method with save and preview options"""
-    mock_confirm.side_effect = [True, True, True]  # Start: Yes, Save: Yes, Preview: Yes
+    # Update mock responses to handle AI-related prompts
+    mock_confirm.side_effect = [True, True, True, False]  # Start, Save, Preview, AI enrichment
     
     with patch.object(wbs, 'collect_project_data'), \
          patch.object(wbs, 'collect_project_details'), \
@@ -103,7 +104,7 @@ def test_run_with_save_and_preview(mock_console_print, mock_confirm, wbs):
         wbs.run()
         
         mock_generate.assert_called_once()
-        assert mock_console_print.call_count >= 3  # Welcome panel, save message, and preview
+        assert mock_console_print.call_count >= 3
 
 @patch('rich.console.Console.print')
 @patch('rich.prompt.Confirm.ask', return_value=True)
@@ -171,8 +172,6 @@ def test_collect_project_data_with_progress(mock_progress_class, wbs):
         # Verify Progress usage
         mock_progress.add_task.assert_called_once_with("Collecting Project Data", total=3)
         assert mock_progress.update.call_count == 3
-        
-        # Verify the update calls happened with correct parameters
         mock_progress.update.assert_has_calls([
             call(mock_task, advance=1, description="Collecting Requirements"),
             call(mock_task, advance=1, description="Collecting Constraints"),
@@ -206,8 +205,6 @@ def test_collect_project_details_with_progress(mock_progress_class, wbs):
         # Verify Progress usage
         mock_progress.add_task.assert_called_once_with("Collecting Project Details", total=3)
         assert mock_progress.update.call_count == 3
-        
-        # Verify the update calls happened with correct parameters
         mock_progress.update.assert_has_calls([
             call(mock_task, advance=1, description="Collecting Risks"),
             call(mock_task, advance=1, description="Collecting Resources"),
@@ -216,9 +213,14 @@ def test_collect_project_details_with_progress(mock_progress_class, wbs):
 
 def test_generate_wbs_markdown(wbs):
     """Test markdown generation"""
+    # Setup complete test data with required start_date
     wbs.project_info = {
         "name": "Test Project",
-        "description": "Test Description"
+        "description": "Test Description",
+        "start_date": "2024-01-01",  # Added required start_date
+        "sponsor": "Test Sponsor",
+        "manager": "Test Manager",
+        "budget": "1000"
     }
     wbs.requirements = ["Requirement 1"]
     wbs.constraints = ["Constraint 1"]
@@ -232,6 +234,91 @@ def test_generate_wbs_markdown(wbs):
     
     markdown = wbs.generate_wbs_markdown()
     
+    # Verify basic structure and content
     assert "# Work Breakdown Structure: Test Project" in markdown
-    assert "## Requirements" in markdown
-    assert "1. Requirement 1" in markdown
+    assert "## Project Information" in markdown
+    assert "## Requirements and Constraints" in markdown
+    assert "### Requirements" in markdown
+    assert "- Requirement 1" in markdown
+    
+    # Verify table structure is present
+    assert "| Task ID | Task Name | Description |" in markdown
+    assert "| 1.0 | Project Initialization |" in markdown
+    assert "| 2.0 | Deliverable 1 |" in markdown
+    assert "| 2.1 | Subtask 1 |" in markdown
+
+def test_generate_basic_wbs_table(wbs):
+    """Test basic WBS table generation"""
+    # Setup test data
+    wbs.project_info = {
+        "name": "Test Project",
+        "description": "Test Description",
+        "start_date": "2024-01-01"
+    }
+    wbs.deliverables = [{
+        "name": "Deliverable 1",
+        "description": "Description 1",
+        "duration": "2",
+        "dependencies": "",
+        "subtasks": ["Subtask 1"]
+    }]
+    
+    table = wbs.generate_basic_wbs_table()
+    
+    # Verify table structure
+    assert "| Task ID | Task Name | Description |" in table
+    assert "| 1.0 | Project Initialization |" in table
+    assert "| 2.0 | Deliverable 1 |" in table
+    assert "| 2.1 | Subtask 1 |" in table
+
+@patch('openai.OpenAI')
+def test_generate_wbs_table_with_ai(mock_openai, wbs):
+    """Test WBS table generation with AI"""
+    # Setup mock OpenAI response
+    mock_completion = MagicMock()
+    mock_completion.choices = [MagicMock(message=MagicMock(content="Test AI Response"))]
+    mock_openai.return_value.chat.completions.create.return_value = mock_completion
+    
+    # Setup test data
+    wbs.project_info = {
+        "name": "Test Project",
+        "description": "Test Description",
+        "start_date": "2024-01-01"
+    }
+    wbs.requirements = ["Requirement 1"]
+    wbs.constraints = ["Constraint 1"]
+    wbs.deliverables = [{
+        "name": "Deliverable 1",
+        "description": "Description 1",
+        "duration": "2",
+        "dependencies": "",
+        "subtasks": ["Subtask 1"]
+    }]
+    
+    # Set OpenAI client
+    wbs.openai_client = mock_openai.return_value
+    
+    table = wbs.generate_wbs_table()
+    
+    # Verify AI was called with correct prompt
+    assert mock_openai.return_value.chat.completions.create.called
+    assert table == "Test AI Response"
+
+@patch('openai.OpenAI')
+def test_enrich_wbs_with_ai(mock_openai, wbs):
+    """Test WBS enrichment with AI"""
+    # Setup mock OpenAI response
+    mock_completion = MagicMock()
+    mock_completion.choices = [MagicMock(message=MagicMock(content="AI Analysis"))]
+    mock_openai.return_value.chat.completions.create.return_value = mock_completion
+    
+    # Set OpenAI client
+    wbs.openai_client = mock_openai.return_value
+    
+    result = wbs.enrich_wbs_with_ai("Original WBS Content")
+    
+    # Verify AI was called and content was enriched
+    assert mock_openai.return_value.chat.completions.create.called
+    assert "Original WBS Content" in result
+    assert "AI Analysis" in result
+    assert "## AI-Enhanced Project Analysis" in result
