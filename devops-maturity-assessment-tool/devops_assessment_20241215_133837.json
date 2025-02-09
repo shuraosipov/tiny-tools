@@ -1,0 +1,159 @@
+{
+  "timestamp": "2024-12-15T13:38:37.574130",
+  "responses": {
+    "organizational_adoption": {
+      "leader_sponsorship": [
+        {
+          "id": "OA.LS.1",
+          "text": "Appoint a decision-making leader to own DevOps adoption",
+          "implemented": false
+        },
+        {
+          "id": "OA.LS.2",
+          "text": "Align DevOps adoption with business objectives",
+          "implemented": false
+        },
+        {
+          "id": "OA.LS.3",
+          "text": "Drive continued improvement through business reviews",
+          "implemented": false
+        },
+        {
+          "id": "OA.LS.4",
+          "text": "Open dialogue between leadership and teams",
+          "implemented": false
+        },
+        {
+          "id": "OA.LS.5",
+          "text": "Assemble a cross-functional enabling team that focuses on organizational transformation",
+          "implemented": false
+        }
+      ],
+      "supportive_team_dynamics": [
+        {
+          "id": "OA.STD.1",
+          "text": "Organize teams into distinct topology types to optimize the value stream",
+          "implemented": false
+        },
+        {
+          "id": "OA.STD.2",
+          "text": "Tailor operating models to business needs and team preferences",
+          "implemented": false
+        },
+        {
+          "id": "OA.STD.3",
+          "text": "Prioritize shared accountability over individual achievements",
+          "implemented": false
+        },
+        {
+          "id": "OA.STD.4",
+          "text": "Structure teams around desired business outcomes",
+          "implemented": false
+        },
+        {
+          "id": "OA.STD.5",
+          "text": "Establish team norms that enhance work performance",
+          "implemented": false
+        },
+        {
+          "id": "OA.STD.6",
+          "text": "Provide teams ownership of the entire value stream for their product",
+          "implemented": true
+        },
+        {
+          "id": "OA.STD.7",
+          "text": "Amplify the scale and impact of centralized functions",
+          "implemented": false
+        },
+        {
+          "id": "OA.STD.8",
+          "text": "Promote cognitive diversity within teams",
+          "implemented": false
+        }
+      ],
+      "team_interfaces": [
+        {
+          "id": "OA.TI.1",
+          "text": "Communicate work flow and goals between teams and stakeholders",
+          "implemented": false
+        },
+        {
+          "id": "OA.TI.2",
+          "text": "Streamline intra-team communication using tools and processes",
+          "implemented": false
+        },
+        {
+          "id": "OA.TI.3",
+          "text": "Establish mechanisms for teams to gather and manage customer feedback",
+          "implemented": false
+        },
+        {
+          "id": "OA.TI.4",
+          "text": "Refine error tracking and resolution",
+          "implemented": false
+        },
+        {
+          "id": "OA.TI.5",
+          "text": "Design adaptive approval workflows without compromising safety",
+          "implemented": false
+        },
+        {
+          "id": "OA.TI.6",
+          "text": "Prioritize customer needs to deliver optimal business outcomes",
+          "implemented": false
+        },
+        {
+          "id": "OA.TI.7",
+          "text": "Maintain a unified knowledge source for teams",
+          "implemented": false
+        },
+        {
+          "id": "OA.TI.8",
+          "text": "Simplify access to organizational information",
+          "implemented": false
+        },
+        {
+          "id": "OA.TI.9",
+          "text": "Facilitate self-service collaboration through APIs and documentation",
+          "implemented": false
+        },
+        {
+          "id": "OA.TI.10",
+          "text": "Choose interaction modes for improved efficiency and cost savings",
+          "implemented": false
+        },
+        {
+          "id": "OA.TI.11",
+          "text": "Offer optional opportunities for cross-team collaboration",
+          "implemented": false
+        }
+      ]
+    }
+  },
+  "statistics": {
+    "overall": {
+      "implemented": 1,
+      "total": 24
+    },
+    "by_domain": {
+      "organizational_adoption": {
+        "implemented": 1,
+        "total": 24
+      }
+    },
+    "by_area": {
+      "organizational_adoption.leader_sponsorship": {
+        "implemented": 0,
+        "total": 5
+      },
+      "organizational_adoption.supportive_team_dynamics": {
+        "implemented": 1,
+        "total": 8
+      },
+      "organizational_adoption.team_interfaces": {
+        "implemented": 0,
+        "total": 11
+      }
+    }
+  }
+}

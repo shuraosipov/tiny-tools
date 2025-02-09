@@ -3,9 +3,13 @@ import json
 from datetime import datetime
 from typing import Dict, List
 from collections import defaultdict
+import subprocess
+from aws_wat_integration import AWSWellArchitectedToolIntegration
 
 class DevOpsMaturityTool:
     def __init__(self):
+        # Initialize AWS WAT integration
+        self.wat_integration = AWSWellArchitectedToolIntegration()
         # Define the assessment structure
         self.domains = {
             "organizational_adoption": {
@@ -70,7 +74,7 @@ class DevOpsMaturityTool:
         return total
 
     def clear_screen(self):
-        os.system('cls' if os.name == 'nt' else 'clear')
+        subprocess.run(['cls' if os.name == 'nt' else 'clear'], shell=True) # import subprocess
 
     def print_progress_bar(self):
         width = 50
@@ -191,7 +195,14 @@ class DevOpsMaturityTool:
         with open(filename, 'w') as f:
             json.dump(report_data, f, indent=2)
             
-        print(f"\nReport saved to {filename}")
+        print(f"\nJSON report saved to {filename}")
+        
+        # Generate PDF report
+        pdf_filename = self.wat_integration.generate_pdf_report(
+            workload_id='default',  # You might want to make this configurable
+            assessment_data=report_data
+        )
+        print(f"PDF report saved to {pdf_filename}")
 
 def main():
     tool = DevOpsMaturityTool()
