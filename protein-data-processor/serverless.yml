@@ -1,0 +1,24 @@
+service: protein-data-processor
+
+provider:
+  name: aws
+  runtime: python3.8
+
+functions:
+  processProteinData:
+    handler: src/handler.process
+    events:
+      - http:
+          path: process
+          method: post
+
+plugins:
+  - serverless-python-requirements
+
+package:
+  individually: true
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+    zip: true
